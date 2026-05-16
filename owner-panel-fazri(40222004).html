@@ -36,8 +36,17 @@
         <li>Cancelled</li>
     </ul>
 
+    <!-- ENABLE SOUND -->
 
-  
+    <button
+        onclick="enableSound()"
+        class="logout-btn">
+
+        Enable Sound
+
+    </button>
+
+    <!-- LOGOUT -->
 
     <button
         class="logout-btn"
@@ -49,8 +58,6 @@
 
 </div>
 
-
-
 <!-- MAIN CONTENT -->
 
 <div class="main-content">
@@ -58,10 +65,6 @@
     <div class="topbar">
 
         <h1>Restaurant Dashboard</h1>
-
-        <!-- TEST SOUND BUTTON -->
-
-    
 
     </div>
 
@@ -113,16 +116,15 @@
 
 <script>
 
-
-
 /* CHECK LOGIN */
-
 
 if(localStorage.getItem("loggedIn") !== "true") {
 
     window.location.href =
     "staff-login.html";
 }
+
+/* LOGOUT */
 
 function logout() {
 
@@ -134,15 +136,9 @@ function logout() {
     "staff-login.html";
 }
 
-let allOrders = [];
+/* ENABLE SOUND */
 
-let lastOrderId = 0;
-
-let currentFilter = "all";
-
-/* TEST SOUND */
-
-function testSound() {
+function enableSound() {
 
     const sound =
     document.getElementById(
@@ -150,22 +146,28 @@ function testSound() {
     );
 
     sound.play()
+
     .then(() => {
 
-        console.log(
-            "Sound Played"
-        );
+        sound.pause();
+
+        sound.currentTime = 0;
+
+        alert("Notification Sound Enabled");
 
     })
 
     .catch(err => {
 
-        console.log(
-            "Sound Error:",
-            err
-        );
+        console.log(err);
     });
 }
+
+let allOrders = [];
+
+let lastOrderId = 0;
+
+let currentFilter = "all";
 
 /* LOAD ORDERS */
 
@@ -197,9 +199,9 @@ async function loadOrders() {
 function displayOrders() {
 
     const container =
-        document.getElementById(
-            "ordersContainer"
-        );
+    document.getElementById(
+        "ordersContainer"
+    );
 
     container.innerHTML = "";
 
@@ -208,9 +210,10 @@ function displayOrders() {
     if(currentFilter !== "all") {
 
         filteredOrders =
-            allOrders.filter(order =>
-                order.status === currentFilter
-            );
+        allOrders.filter(order =>
+
+            order.status === currentFilter
+        );
     }
 
     filteredOrders.forEach(order => {
@@ -318,6 +321,28 @@ function displayOrders() {
 
             <div class="buttons">
 
+                ${order.status === "Pending"
+
+                ? `
+
+                    <button
+
+                    onclick="
+                    updateStatus(
+                    ${order.id},
+                    'Preparing'
+                    )"
+
+                    class="ready">
+
+                    Accept
+
+                    </button>
+
+                  `
+
+                : ""}
+
                 ${order.status === "Preparing"
 
                 ? `
@@ -415,27 +440,28 @@ async function updateStatus(
 
 function checkNewOrders(orders) {
 
-    if(orders.length === 0)
-    return;
+    if(orders.length === 0) return;
 
-    const newest = orders[0];
+    orders.forEach(order => {
 
-    if(newest.id > lastOrderId) {
+        if(order.id > lastOrderId) {
 
-        lastOrderId = newest.id;
+            if(
+                lastOrderId !== 0 &&
+                order.status === "Pending"
+            ) {
 
-        if(newest.status === "Pending") {
+                showPopup(order);
+            }
 
-            showPopup(newest);
+            lastOrderId = order.id;
         }
-    }
+    });
 }
 
 /* SHOW POPUP */
 
 function showPopup(order) {
-
-    /* PLAY SOUND */
 
     const sound =
     document.getElementById(
@@ -459,8 +485,6 @@ function showPopup(order) {
             err
         );
     });
-
-    /* SHOW POPUP */
 
     document.getElementById(
         "popupOverlay"
@@ -496,8 +520,6 @@ function showPopup(order) {
 
     `;
 
-    /* ACCEPT */
-
     document.getElementById(
         "popupAccept"
     ).onclick = () => {
@@ -509,8 +531,6 @@ function showPopup(order) {
 
         closePopup();
     };
-
-    /* REJECT */
 
     document.getElementById(
         "popupReject"
@@ -601,10 +621,6 @@ sidebarItems.forEach(item => {
 loadOrders();
 
 /* AUTO REFRESH */
-
-/* LOGOUT */
-
-
 
 setInterval(() => {
 

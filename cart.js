@@ -559,7 +559,7 @@ async function placeOrder(){
     try {
 
         await fetch(
-            "http://localhost:5000/orders",
+            "https://focused-rebirth-production-6a18.up.railway.app",
             {
 
             method: "POST",

@@ -18,13 +18,15 @@ app.use(express.static(__dirname));
 
 const db = mysql.createConnection({
 
-    host: process.env.DB_HOST,
+    host: process.env.MYSQLHOST,
 
-    user: process.env.DB_USER,
+    user: process.env.MYSQLUSER,
 
-    password: process.env.DB_PASSWORD,
+    password: process.env.MYSQLPASSWORD,
 
-    database: process.env.DB_NAME
+    database: process.env.MYSQLDATABASE,
+
+    port: process.env.MYSQLPORT
 });
 
 /* CONNECT MYSQL */
@@ -33,6 +35,7 @@ db.connect((err) => {
 
     if(err){
 
+        console.log("MySQL Connection Error:");
         console.log(err);
 
     } else {

@@ -48,7 +48,7 @@ href="staff-login.css">
             </option>
 
             <option value="kitchen">
-                kitchen
+                Kitchen
             </option>
 
         </select>
@@ -139,27 +139,26 @@ async function login() {
 
             /* REDIRECT */
 
-            if(data.role === "owner") {
+         if(data.success) {
 
-                window.location.href =
-                "owner-panel-fazri.html";
-            }
+    if(data.role === "owner") {
 
-            else if(
-                data.role === "cashier"
-            ) {
+        window.location.href =
+        "owner-panel-fazri(40222004).html";
+    }
 
-                window.location.href =
-                "cashier.html";
-            }
+    else if(data.role === "cashier") {
 
-            else if(
-                data.role === "kitchen"
-            ) {
+        window.location.href =
+        "cashier.html";
+    }
 
-                window.location.href =
-                "kitchen.html";
-            }
+    else if(data.role === "kitchen") {
+
+        window.location.href =
+        "kitchen.html";
+    }
+}
         }
 
         else {

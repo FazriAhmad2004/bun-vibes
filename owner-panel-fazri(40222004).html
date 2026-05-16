@@ -118,6 +118,22 @@
 /* CHECK LOGIN */
 
 
+if(localStorage.getItem("loggedIn") !== "true") {
+
+    window.location.href =
+    "staff-login.html";
+}
+
+function logout() {
+
+    localStorage.removeItem("loggedIn");
+
+    localStorage.removeItem("staffRole");
+
+    window.location.href =
+    "staff-login.html";
+}
+
 let allOrders = [];
 
 let lastOrderId = 0;

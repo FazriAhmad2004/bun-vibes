@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BUN VIBES ADMIN</title>
+
+<link rel="stylesheet" href="admin.css">
+
+</head>
+
+<body>
+
+<!-- AUDIO -->
+
+<audio id="orderSound">
+
+    <source
+        src="audio/dingsound.mp3"
+        type="audio/mpeg">
+
+</audio>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+    <h2>BUN VIBES</h2>
+
+    <ul>
+        <li class="active">Live Orders</li>
+        <li>Preparing</li>
+        <li>Delivered</li>
+        <li>Cancelled</li>
+    </ul>
+
+
+  
+
+    <button
+        class="logout-btn"
+        onclick="logout()">
+
+        Logout
+
+    </button>
+
+</div>
+
+</div>
+
+<!-- MAIN CONTENT -->
+
+<div class="main-content">
+
+    <div class="topbar">
+
+        <h1>Restaurant Dashboard</h1>
+
+        <!-- TEST SOUND BUTTON -->
+
+    
+
+    </div>
+
+    <!-- POPUP -->
+
+    <div id="popupOverlay"
+         class="popup-overlay">
+
+        <div class="popup-box">
+
+            <h2>
+                🔔 New Order Received
+            </h2>
+
+            <div id="popupContent"></div>
+
+            <div class="popup-buttons">
+
+                <button
+                    class="accept"
+                    id="popupAccept">
+
+                    Accept
+
+                </button>
+
+                <button
+                    class="reject"
+                    id="popupReject">
+
+                    Decline
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ORDERS -->
+
+    <div id="ordersContainer"
+         class="orders-container">
+
+    </div>
+
+</div>
+
+<script>
+
+
+
+/* CHECK LOGIN */
+
+const loggedIn =
+localStorage.getItem("loggedIn");
+
+const role =
+localStorage.getItem("staffRole");
+
+if(
+    loggedIn !== "true"
+    || role !== "owner"
+){
+
+    window.location.href =
+    "staff-login.html";
+}
+
+let allOrders = [];
+
+let lastOrderId = 0;
+
+let currentFilter = "all";
+
+/* TEST SOUND */
+
+function testSound() {
+
+    const sound =
+    document.getElementById(
+        "orderSound"
+    );
+
+    sound.play()
+    .then(() => {
+
+        console.log(
+            "Sound Played"
+        );
+
+    })
+
+    .catch(err => {
+
+        console.log(
+            "Sound Error:",
+            err
+        );
+    });
+}
+
+/* LOAD ORDERS */
+
+async function loadOrders() {
+
+    try {
+
+        const res = await fetch(
+            "http://localhost:5000/orders"
+        );
+
+        const orders = await res.json();
+
+        allOrders = orders;
+
+        checkNewOrders(orders);
+
+        displayOrders();
+    }
+
+    catch (err) {
+
+        console.log(err);
+    }
+}
+
+/* DISPLAY ORDERS */
+
+function displayOrders() {
+
+    const container =
+        document.getElementById(
+            "ordersContainer"
+        );
+
+    container.innerHTML = "";
+
+    let filteredOrders = allOrders;
+
+    if(currentFilter !== "all") {
+
+        filteredOrders =
+            allOrders.filter(order =>
+                order.status === currentFilter
+            );
+    }
+
+    filteredOrders.forEach(order => {
+
+        let itemsHTML = "";
+
+        let items =
+        JSON.parse(order.items);
+
+        items.forEach(item => {
+
+            itemsHTML += `
+
+                <p>
+                    ${item.qty}
+                    x
+                    ${item.name}
+                </p>
+
+            `;
+        });
+
+        container.innerHTML += `
+
+        <div class="order-card">
+
+            <div class="order-header">
+
+                <h2>
+                    Order #${order.id}
+                </h2>
+
+                <span class="status ${order.status}">
+                    ${order.status}
+                </span>
+
+            </div>
+
+            <div class="customer-details">
+
+                <p>
+                    <strong>Name:</strong>
+                    ${order.customer_name}
+                </p>
+
+                <p>
+                    <strong>Phone:</strong>
+                    ${order.phone}
+                </p>
+
+                <p>
+                    <strong>Order Type:</strong>
+                    ${order.order_type}
+                </p>
+
+                <p>
+                    <strong>Address:</strong>
+                    ${order.address}
+                </p>
+
+                <p>
+                    <strong>Street:</strong>
+                    ${order.street}
+                </p>
+
+                <p>
+                    <strong>Payment:</strong>
+                    ${order.payment}
+                </p>
+
+                <p>
+                    <strong>Ordered Time:</strong>
+
+                    ${new Date(
+                        order.created_at
+                    ).toLocaleString()}
+                </p>
+
+                <p>
+
+                    <a href="${order.location}"
+                       target="_blank">
+
+                       📍 Open Location
+
+                    </a>
+
+                </p>
+
+            </div>
+
+            <div class="items">
+
+                <h3>Items</h3>
+
+                ${itemsHTML}
+
+            </div>
+
+            <div class="total">
+
+                Total : Rs. ${order.total}
+
+            </div>
+
+            <div class="buttons">
+
+                ${order.status === "Preparing"
+
+                ? `
+
+                    <button
+
+                    onclick="
+                    updateStatus(
+                    ${order.id},
+                    'Ready'
+                    )"
+
+                    class="ready">
+
+                    Ready
+
+                    </button>
+
+                  `
+
+                : ""}
+
+                ${order.status === "Ready"
+
+                ? `
+
+                    <button
+
+                    onclick="
+                    updateStatus(
+                    ${order.id},
+                    'Delivered'
+                    )"
+
+                    class="delivered">
+
+                    Delivered
+
+                    </button>
+
+                  `
+
+                : ""}
+
+            </div>
+
+        </div>
+
+        `;
+    });
+}
+
+/* UPDATE STATUS */
+
+async function updateStatus(
+    id,
+    status
+) {
+
+    try {
+
+        await fetch(
+
+            `http://localhost:5000/orders/${id}`,
+
+            {
+
+                method: "PUT",
+
+                headers: {
+
+                    "Content-Type":
+                    "application/json"
+
+                },
+
+                body: JSON.stringify({
+
+                    status: status
+
+                })
+            }
+        );
+
+        loadOrders();
+    }
+
+    catch (err) {
+
+        console.log(err);
+    }
+}
+
+/* CHECK NEW ORDERS */
+
+function checkNewOrders(orders) {
+
+    if(orders.length === 0)
+    return;
+
+    const newest = orders[0];
+
+    if(newest.id > lastOrderId) {
+
+        lastOrderId = newest.id;
+
+        if(newest.status === "Pending") {
+
+            showPopup(newest);
+        }
+    }
+}
+
+/* SHOW POPUP */
+
+function showPopup(order) {
+
+    /* PLAY SOUND */
+
+    const sound =
+    document.getElementById(
+        "orderSound"
+    );
+
+    sound.play()
+
+    .then(() => {
+
+        console.log(
+            "Notification Played"
+        );
+
+    })
+
+    .catch(err => {
+
+        console.log(
+            "Sound Blocked:",
+            err
+        );
+    });
+
+    /* SHOW POPUP */
+
+    document.getElementById(
+        "popupOverlay"
+    ).style.display = "flex";
+
+    document.getElementById(
+        "popupContent"
+    ).innerHTML = `
+
+        <p>
+
+            <strong>
+                ${order.customer_name}
+            </strong>
+
+        </p>
+
+        <br>
+
+        <p>
+
+            ${order.order_type}
+
+        </p>
+
+        <br>
+
+        <p>
+
+            Rs. ${order.total}
+
+        </p>
+
+    `;
+
+    /* ACCEPT */
+
+    document.getElementById(
+        "popupAccept"
+    ).onclick = () => {
+
+        updateStatus(
+            order.id,
+            "Preparing"
+        );
+
+        closePopup();
+    };
+
+    /* REJECT */
+
+    document.getElementById(
+        "popupReject"
+    ).onclick = () => {
+
+        updateStatus(
+            order.id,
+            "Rejected"
+        );
+
+        closePopup();
+    };
+}
+
+/* CLOSE POPUP */
+
+function closePopup() {
+
+    document.getElementById(
+        "popupOverlay"
+    ).style.display = "none";
+}
+
+/* SIDEBAR FILTER */
+
+const sidebarItems =
+document.querySelectorAll(
+    ".sidebar ul li"
+);
+
+sidebarItems.forEach(item => {
+
+    item.addEventListener(
+        "click",
+
+        () => {
+
+            sidebarItems.forEach(li =>
+
+                li.classList.remove(
+                    "active"
+                )
+            );
+
+            item.classList.add(
+                "active"
+            );
+
+            const text =
+            item.innerText;
+
+            if(text === "Live Orders") {
+
+                currentFilter = "all";
+            }
+
+            else if(
+                text === "Preparing"
+            ) {
+
+                currentFilter =
+                "Preparing";
+            }
+
+            else if(
+                text === "Delivered"
+            ) {
+
+                currentFilter =
+                "Delivered";
+            }
+
+            else if(
+                text === "Cancelled"
+            ) {
+
+                currentFilter =
+                "Rejected";
+            }
+
+            displayOrders();
+        }
+    );
+});
+
+/* INITIAL LOAD */
+
+loadOrders();
+
+/* AUTO REFRESH */
+
+/* LOGOUT */
+
+function logout() {
+
+    localStorage.removeItem(
+        "loggedIn"
+    );
+
+    localStorage.removeItem(
+        "staffRole"
+    );
+
+    window.location.href =
+    "staff-login.html";
+}
+
+setInterval(() => {
+
+    loadOrders();
+
+}, 5000);
+
+</script>
+
+</body>
+</html>

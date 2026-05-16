@@ -1,0 +1,213 @@
+*{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+
+    font-family:Arial, sans-serif;
+}
+
+body{
+
+    background:#f4f4f4;
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:20px;
+}
+
+/* CONTAINER */
+
+.container{
+
+    width:100%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+}
+
+/* TRACK BOX */
+
+.track-box{
+
+    width:100%;
+
+    max-width:500px;
+
+    background:white;
+
+    padding:35px;
+
+    border-radius:25px;
+
+    box-shadow:
+    0 10px 25px
+    rgba(0,0,0,0.1);
+}
+
+/* TITLE */
+
+.track-box h1{
+
+    text-align:center;
+
+    color:#ff6b00;
+
+    font-size:40px;
+
+    margin-bottom:10px;
+}
+
+.track-box h2{
+
+    text-align:center;
+
+    margin-bottom:30px;
+
+    color:#333;
+}
+
+/* STATUS BOX */
+
+.status-box{
+
+    text-align:center;
+
+    margin-bottom:30px;
+}
+
+.status-box h3{
+
+    font-size:28px;
+
+    margin-bottom:15px;
+
+    color:#222;
+}
+
+/* STATUS */
+
+.status{
+
+    padding:12px 22px;
+
+    border-radius:50px;
+
+    color:white;
+
+    font-weight:bold;
+
+    font-size:18px;
+
+    display:inline-block;
+}
+
+/* STATUS COLORS */
+
+.Pending{
+
+    background:#ff9800;
+}
+
+.Preparing{
+
+    background:#2196f3;
+}
+
+.Ready{
+
+    background:#9c27b0;
+}
+
+.Delivered{
+
+    background:#4caf50;
+}
+
+.Rejected{
+
+    background:red;
+}
+
+/* DETAILS */
+
+.details{
+
+    background:#fafafa;
+
+    padding:20px;
+
+    border-radius:15px;
+
+    margin-bottom:25px;
+}
+
+.details p{
+
+    margin-bottom:12px;
+
+    color:#444;
+
+    font-size:16px;
+}
+
+/* ITEMS */
+
+.items{
+
+    background:#fafafa;
+
+    padding:20px;
+
+    border-radius:15px;
+}
+
+.items h3{
+
+    margin-bottom:15px;
+
+    color:#222;
+}
+
+.items p{
+
+    padding:10px 0;
+
+    border-bottom:1px solid #eee;
+
+    color:#555;
+}
+
+/* MOBILE */
+
+@media(max-width:500px){
+
+    .track-box{
+
+        padding:25px 20px;
+    }
+
+    .track-box h1{
+
+        font-size:32px;
+    }
+
+    .status-box h3{
+
+        font-size:24px;
+    }
+
+    .status{
+
+        font-size:16px;
+    }
+}

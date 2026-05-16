@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Track Order</title>
+
+<link rel="stylesheet"
+href="track-order.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="track-box">
+
+        <h1>BUN VIBES</h1>
+
+        <h2>Track Your Order</h2>
+
+        <div id="orderInfo">
+
+            Loading...
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+/* GET ORDER ID */
+
+const orderId = localStorage.getItem(
+    "latestOrderId"
+);
+
+/* CHECK */
+
+if(!orderId){
+
+    document.getElementById(
+        "orderInfo"
+    ).innerHTML =
+
+    "<h3>No Order Found</h3>";
+}
+
+/* LOAD ORDER */
+
+async function loadOrder() {
+
+    try {
+
+        const res = await fetch(
+
+        
+    `http://localhost:5000/orders/${orderId}`
+
+
+        );
+
+        const order = await res.json();
+
+        let itemsHTML = "";
+
+        let items =
+        JSON.parse(order.items);
+
+        items.forEach(item => {
+
+            itemsHTML += `
+
+                <p>
+                    ${item.qty} x ${item.name}
+                </p>
+
+            `;
+        });
+
+        document.getElementById(
+            "orderInfo"
+        ).innerHTML = `
+
+            <div class="status-box">
+
+                <h3>
+                    Order #${order.id}
+                </h3>
+
+                <span class="
+                    status
+                    ${order.status}
+                ">
+
+                    ${order.status}
+
+                </span>
+
+            </div>
+
+            <div class="details">
+
+                <p>
+
+                    <strong>Name:</strong>
+
+                    ${order.customer_name}
+
+                </p>
+
+                <p>
+
+                    <strong>Phone:</strong>
+
+                    ${order.phone}
+
+                </p>
+
+                <p>
+
+                    <strong>Order Type:</strong>
+
+                    ${order.order_type}
+
+                </p>
+
+                <p>
+
+                    <strong>Total:</strong>
+
+                    Rs. ${order.total}
+
+                </p>
+
+            </div>
+
+            <div class="items">
+
+                <h3>Items</h3>
+
+                ${itemsHTML}
+
+            </div>
+
+        `;
+    }
+
+    catch(err){
+
+        console.log(err);
+
+        document.getElementById(
+            "orderInfo"
+        ).innerHTML =
+
+        "<h3>Order Not Found</h3>";
+    }
+}
+
+/* INITIAL LOAD */
+
+loadOrder();
+
+/* AUTO REFRESH */
+
+setInterval(() => {
+
+    loadOrder();
+
+}, 5000);
+
+</script>
+
+</body>
+</html>

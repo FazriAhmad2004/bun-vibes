@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Your Cart</title>
+
+<link rel="stylesheet" href="cart.css">
+
+</head>
+
+<body>
+
+<header>
+
+<button
+onclick="goBack()"
+class="back-btn">
+
+←
+
+</button>
+
+<h2>Your Cart</h2>
+
+</header>
+
+<div class="container">
+
+<div class="cart-box">
+
+<!-- CART ITEMS -->
+<div id="cartItems"></div>
+
+<!-- TOTAL -->
+<div class="total">
+
+Total: Rs.
+<span id="grandTotal">0</span>
+
+</div>
+
+<hr>
+
+<!-- CUSTOMER DETAILS -->
+
+<input
+type="text"
+id="name"
+placeholder="Your Name">
+
+<input
+type="text"
+id="phone"
+placeholder="Phone Number">
+
+<!-- ORDER TYPE -->
+
+<h3>Order Type</h3>
+
+<select
+id="orderType"
+onchange="toggleDeliveryFields()">
+
+<option value="Dining">
+Dining
+</option>
+
+<option value="Takeaway">
+Takeaway
+</option>
+
+<option value="Delivery">
+Delivery
+</option>
+
+</select>
+
+<!-- DELIVERY SECTION -->
+
+<div id="deliverySection">
+
+<input
+type="text"
+id="address"
+placeholder="Delivery Address (Required)">
+
+<input
+type="text"
+id="street"
+placeholder="Building / Street / Landmark">
+
+<button
+type="button"
+onclick="getLocation()">
+
+📍 Get Location
+
+</button>
+
+<p id="locationText"></p>
+
+</div>
+
+<!-- PAYMENT METHOD -->
+
+<h3>Payment Method</h3>
+
+<div class="payment-method">
+
+<label class="payment-option">
+
+<input
+type="radio"
+name="payment"
+value="cod"
+checked
+onchange="togglePaymentMethod()">
+
+Cash on Delivery
+
+</label>
+
+<label class="payment-option">
+
+<input
+type="radio"
+name="payment"
+value="online"
+onchange="togglePaymentMethod()">
+
+Online Payment
+
+</label>
+
+</div>
+
+<!-- PAYPAL SECTION -->
+
+<div
+id="paypalSection"
+style="display:none;">
+
+<h3>
+
+Complete Payment
+to Place Order
+
+</h3>
+
+<div class="payment-note">
+
+⚠ Payments are securely processed
+in USD via PayPal.<br>
+
+Your bank/card will automatically
+convert the LKR amount.
+
+</div>
+
+<div id="paypal-button-container"></div>
+
+</div>
+
+<!-- PLACE ORDER -->
+
+<button
+id="placeOrderBtn"
+onclick="placeOrder()">
+
+Place Order
+
+</button>
+
+<!-- CLEAR CART -->
+
+<button
+onclick="clearCart()"
+class="clear-btn">
+
+Clear Cart
+
+</button>
+
+<p class="note">
+
+⚠ Delivery charges may apply
+for your location.
+
+</p>
+
+</div>
+
+</div>
+
+<!-- PAYPAL SDK -->
+
+<script src="https://www.paypal.com/sdk/js?client-id=Ab38WYyDvuhIul8o5k4Ch-JBOssivhy8gHOxBR-yUa34Wp1whMl83LqRnq_45mdw6EHM6WAtuqdLJCg_&currency=USD"></script>
+
+<!-- CART JS -->
+
+<script src="cart.js"></script>
+
+</body>
+</html>

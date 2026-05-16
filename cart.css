@@ -1,0 +1,319 @@
+body{
+    font-family:Arial;
+    background:#f2f2f2;
+    margin:0;
+}
+
+header{
+    background:#ff6b00;
+    color:white;
+    padding:15px;
+    text-align:center;
+    position:relative;
+}
+
+.back-btn{
+    position:absolute;
+    left:15px;
+    top:15px;
+    background:white;
+    color:#ff6b00;
+    border:none;
+    padding:8px 10px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.container{
+    display:flex;
+    justify-content:center;
+    padding:20px;
+}
+
+.cart-box{
+    width:100%;
+    max-width:500px;
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+.item{
+    border-bottom:1px solid #eee;
+    padding:15px 0;
+}
+
+.item h4{
+    margin:0;
+}
+
+button{
+    background:#ff6b00;
+    color:white;
+    border:none;
+    padding:8px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    margin:3px;
+}
+
+.remove{
+    background:red;
+}
+
+input,
+select{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border-radius:6px;
+    border:1px solid #ccc;
+}
+
+.total{
+    font-size:18px;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+.note{
+    font-size:12px;
+    color:gray;
+    margin-top:5px;
+    text-align:center;
+}
+
+.clear-btn{
+
+    background:red;
+
+    color:white;
+
+    width:100%;
+
+    padding:12px;
+    height: 40px;
+
+    border:none;
+
+    border-radius:8px;
+
+    margin-top:20px;
+
+    cursor:pointer;
+
+    font-size:10px;
+
+    display:block;
+}
+#paypal-button-container{
+    margin-top:20px;
+}
+
+#placeOrderBtn{
+
+    width:100%;
+    margin-top:20px;
+    opacity:0.5;
+    cursor:not-allowed;
+}
+
+#placeOrderBtn.active{
+
+    opacity:1;
+    cursor:pointer;
+}
+
+#paypal-button-container{
+
+    margin-top:20px;
+
+    width:100%;
+}
+
+.payment-note{
+
+    background:#fff3cd;
+
+    color:#856404;
+
+    padding:12px;
+
+    border-radius:8px;
+
+    font-size:14px;
+
+    margin-top:15px;
+
+    margin-bottom:15px;
+
+    line-height:1.5;
+
+    border:1px solid #ffeeba;
+}
+
+/* PAYMENT METHOD */
+
+.payment-method{
+
+    display: flex;
+
+    gap: 15px;
+
+    margin: 15px 0 25px 0;
+
+    flex-wrap: wrap;
+}
+
+.payment-option{
+
+    flex: 1;
+
+    border: 2px solid #ddd;
+
+    border-radius: 12px;
+
+    padding: 14px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+
+    background: #fff;
+
+    transition: 0.3s;
+}
+
+.payment-option:hover{
+
+    border-color: #ff9800;
+
+    background: #fff8f0;
+}
+
+.payment-option input{
+
+    margin-right: 8px;
+
+    transform: scale(1.2);
+}
+
+/* PAYPAL SECTION */
+
+#paypalSection{
+
+    margin-top: 20px;
+
+    padding: 20px;
+
+    border-radius: 15px;
+
+    background: #fafafa;
+
+    border: 1px solid #eee;
+}
+
+/* PAYMENT NOTE */
+
+.payment-note{
+
+    background: #fff3cd;
+
+    color: #856404;
+
+    padding: 15px;
+
+    border-radius: 10px;
+
+    margin-bottom: 20px;
+
+    line-height: 1.6;
+
+    font-size: 14px;
+
+    border: 1px solid #ffe69c;
+}
+
+/* PLACE ORDER BUTTON */
+
+#placeOrderBtn{
+
+    width: 100%;
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    margin-top: 20px;
+
+    transition: 0.3s;
+}
+
+/* DISABLED BUTTON */
+
+#placeOrderBtn:disabled{
+
+    background: #ffb680;
+
+    color: white;
+
+    cursor: not-allowed;
+}
+
+/* ACTIVE BUTTON */
+
+#placeOrderBtn.active{
+
+    background: #28a745;
+
+    color: white;
+}
+
+/* CLEAR CART BUTTON */
+
+.clear-btn{
+
+    width: 100%;
+
+    margin-top: 15px;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: red;
+
+    color: white;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.clear-btn:hover{
+
+    opacity: 0.9;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+    .payment-method{
+
+        flex-direction: column;
+    }
+}

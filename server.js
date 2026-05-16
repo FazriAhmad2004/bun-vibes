@@ -24,7 +24,7 @@ const db = mysql.createPool({
 
     password: process.env.MYSQLPASSWORD,
 
-    database: "bun_vibes",
+    database: process.env.MYSQLDATABASE,
 
     port: process.env.MYSQLPORT,
 
@@ -34,7 +34,6 @@ const db = mysql.createPool({
 
     queueLimit: 0
 });
-
 
 
 

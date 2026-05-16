@@ -117,20 +117,6 @@
 
 /* CHECK LOGIN */
 
-const loggedIn =
-localStorage.getItem("loggedIn");
-
-const role =
-localStorage.getItem("staffRole");
-
-if(
-    loggedIn !== "true"
-    || role !== "owner"
-){
-
-    window.location.href =
-    "staff-login.html";
-}
 
 let allOrders = [];
 
@@ -172,7 +158,7 @@ async function loadOrders() {
     try {
 
         const res = await fetch(
-            "http://localhost:5000/orders"
+            "https://focused-rebirth-production-6a18.up.railway.app//orders"
         );
 
         const orders = await res.json();
@@ -602,19 +588,7 @@ loadOrders();
 
 /* LOGOUT */
 
-function logout() {
 
-    localStorage.removeItem(
-        "loggedIn"
-    );
-
-    localStorage.removeItem(
-        "staffRole"
-    );
-
-    window.location.href =
-    "staff-login.html";
-}
 
 setInterval(() => {
 

@@ -16,7 +16,7 @@ app.use(express.static(__dirname));
 
 /* DATABASE CONNECTION */
 
-const db = mysql.createConnection({
+const db = mysql.createPool({
 
     host: process.env.MYSQLHOST,
 
@@ -26,23 +26,18 @@ const db = mysql.createConnection({
 
     database: process.env.MYSQLDATABASE,
 
-    port: process.env.MYSQLPORT
+    port: process.env.MYSQLPORT,
+
+    waitForConnections: true,
+
+    connectionLimit: 10,
+
+    queueLimit: 0
 });
 
-/* CONNECT MYSQL */
 
-db.connect((err) => {
 
-    if(err){
 
-        console.log("MySQL Connection Error:");
-        console.log(err);
-
-    } else {
-
-        console.log("MySQL Connected");
-    }
-});
 
 /* SAVE ORDER */
 

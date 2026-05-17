@@ -33,7 +33,7 @@ app.post("/orders", (req, res) => {
 
         phone,
 
-        orderTtype,
+            orderType,
 
         address,
 

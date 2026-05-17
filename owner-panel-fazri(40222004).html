@@ -176,7 +176,9 @@ async function loadOrders() {
     try {
 
         const res = await fetch(
+
             "https://focused-rebirth-production-6a18.up.railway.app/orders"
+
         );
 
         const orders = await res.json();
@@ -188,7 +190,7 @@ async function loadOrders() {
         displayOrders();
     }
 
-    catch (err) {
+    catch(err) {
 
         console.log(err);
     }
@@ -220,17 +222,27 @@ function displayOrders() {
 
         let itemsHTML = "";
 
-        let items =
-        JSON.parse(order.items);
+        let items = [];
+
+        try {
+
+            items = JSON.parse(order.items);
+
+        } catch {
+
+            items = [];
+        }
 
         items.forEach(item => {
 
             itemsHTML += `
 
                 <p>
+
                     ${item.qty}
                     x
                     ${item.name}
+
                 </p>
 
             `;
@@ -243,11 +255,15 @@ function displayOrders() {
             <div class="order-header">
 
                 <h2>
+
                     Order #${order.id}
+
                 </h2>
 
                 <span class="status ${order.status}">
+
                     ${order.status}
+
                 </span>
 
             </div>
@@ -255,49 +271,70 @@ function displayOrders() {
             <div class="customer-details">
 
                 <p>
+
                     <strong>Name:</strong>
-                    ${order.customer_name}
+
+                    ${order.customer_name || "N/A"}
+
                 </p>
 
                 <p>
+
                     <strong>Phone:</strong>
-                    ${order.phone}
+
+                    ${order.phone || "N/A"}
+
                 </p>
 
                 <p>
+
                     <strong>Order Type:</strong>
-                    ${order.order_type}
+
+                    ${order.order_type || "N/A"}
+
                 </p>
 
                 <p>
+
                     <strong>Address:</strong>
-                    ${order.address}
+
+                    ${order.address || "N/A"}
+
                 </p>
 
                 <p>
+
                     <strong>Street:</strong>
-                    ${order.street}
+
+                    ${order.street || "N/A"}
+
                 </p>
 
                 <p>
+
                     <strong>Payment:</strong>
-                    ${order.payment}
+
+                    ${order.payment || "N/A"}
+
                 </p>
 
                 <p>
+
                     <strong>Ordered Time:</strong>
 
                     ${new Date(
                         order.created_at
                     ).toLocaleString()}
+
                 </p>
 
                 <p>
 
-                    <a href="${order.location}"
-                       target="_blank">
+                    <a
+                    href="${order.location}"
+                    target="_blank">
 
-                       📍 Open Location
+                    📍 Open Location
 
                     </a>
 
@@ -325,21 +362,35 @@ function displayOrders() {
 
                 ? `
 
-                    <button
+                <button
 
-                    onclick="
-                    updateStatus(
-                    ${order.id},
-                    'Preparing'
-                    )"
+                onclick="
+                updateStatus(
+                ${order.id},
+                'Preparing'
+                )"
 
-                    class="ready">
+                class="ready">
 
-                    Accept
+                Accept
 
-                    </button>
+                </button>
 
-                  `
+                <button
+
+                onclick="
+                updateStatus(
+                ${order.id},
+                'Rejected'
+                )"
+
+                class="reject">
+
+                Reject
+
+                </button>
+
+                `
 
                 : ""}
 
@@ -347,21 +398,21 @@ function displayOrders() {
 
                 ? `
 
-                    <button
+                <button
 
-                    onclick="
-                    updateStatus(
-                    ${order.id},
-                    'Ready'
-                    )"
+                onclick="
+                updateStatus(
+                ${order.id},
+                'Ready'
+                )"
 
-                    class="ready">
+                class="ready">
 
-                    Ready
+                Ready
 
-                    </button>
+                </button>
 
-                  `
+                `
 
                 : ""}
 
@@ -369,21 +420,21 @@ function displayOrders() {
 
                 ? `
 
-                    <button
+                <button
 
-                    onclick="
-                    updateStatus(
-                    ${order.id},
-                    'Delivered'
-                    )"
+                onclick="
+                updateStatus(
+                ${order.id},
+                'Delivered'
+                )"
 
-                    class="delivered">
+                class="delivered">
 
-                    Delivered
+                Delivered
 
-                    </button>
+                </button>
 
-                  `
+                `
 
                 : ""}
 
@@ -430,7 +481,7 @@ async function updateStatus(
         loadOrders();
     }
 
-    catch (err) {
+    catch(err) {
 
         console.log(err);
     }
@@ -442,21 +493,31 @@ function checkNewOrders(orders) {
 
     if(orders.length === 0) return;
 
-    orders.forEach(order => {
+    const newestOrder = orders[0];
 
-        if(order.id > lastOrderId) {
+    /* FIRST LOAD */
 
-            if(
-                lastOrderId !== 0 &&
-                order.status === "Pending"
-            ) {
+    if(lastOrderId === 0) {
 
-                showPopup(order);
-            }
+        lastOrderId = newestOrder.id;
 
-            lastOrderId = order.id;
-        }
-    });
+        return;
+    }
+
+    /* NEW ORDER */
+
+    if(
+
+        newestOrder.id > lastOrderId &&
+
+        newestOrder.status === "Pending"
+
+    ) {
+
+        showPopup(newestOrder);
+
+        lastOrderId = newestOrder.id;
+    }
 }
 
 /* SHOW POPUP */
@@ -473,7 +534,7 @@ function showPopup(order) {
     .then(() => {
 
         console.log(
-            "Notification Played"
+            "Sound Played"
         );
 
     })
@@ -481,7 +542,7 @@ function showPopup(order) {
     .catch(err => {
 
         console.log(
-            "Sound Blocked:",
+            "Sound Blocked",
             err
         );
     });
@@ -497,7 +558,9 @@ function showPopup(order) {
         <p>
 
             <strong>
+
                 ${order.customer_name}
+
             </strong>
 
         </p>
@@ -626,7 +689,7 @@ setInterval(() => {
 
     loadOrders();
 
-}, 5000);
+}, 3000);
 
 </script>
 

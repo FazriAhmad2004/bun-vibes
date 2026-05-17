@@ -136,38 +136,49 @@ function logout() {
     "staff-login.html";
 }
 
-/* ENABLE SOUND */
+/* SOUND */
+
+const notificationSound =
+document.getElementById(
+    "orderSound"
+);
+
+let soundEnabled = false;
 
 function enableSound() {
 
-    const sound =
-    document.getElementById(
-        "orderSound"
-    );
-
-    sound.play()
+    notificationSound.play()
 
     .then(() => {
 
-        sound.pause();
+        notificationSound.pause();
 
-        sound.currentTime = 0;
+        notificationSound.currentTime = 0;
 
-        alert("Notification Sound Enabled");
+        soundEnabled = true;
 
+        alert(
+            "Notification Sound Enabled ✅"
+        );
     })
 
     .catch(err => {
 
         console.log(err);
+
+        alert(
+            "Click Enable Sound Again"
+        );
     });
 }
 
+/* VARIABLES */
+
 let allOrders = [];
 
-let lastOrderId = 0;
-
 let currentFilter = "all";
+
+let lastOrderId = 0;
 
 /* LOAD ORDERS */
 
@@ -188,12 +199,132 @@ async function loadOrders() {
         checkNewOrders(orders);
 
         displayOrders();
+
     }
 
     catch(err) {
 
         console.log(err);
     }
+}
+
+/* CHECK NEW ORDERS */
+
+function checkNewOrders(orders) {
+
+    if(orders.length === 0) return;
+
+    const newestOrder = orders[0];
+
+    /* FIRST LOAD */
+
+    if(lastOrderId === 0) {
+
+        lastOrderId = newestOrder.id;
+
+        return;
+    }
+
+    /* NEW ORDER */
+
+    if(
+
+        newestOrder.id > lastOrderId &&
+
+        newestOrder.status === "Pending"
+
+    ) {
+
+        showPopup(newestOrder);
+
+        lastOrderId = newestOrder.id;
+    }
+}
+
+/* SHOW POPUP */
+
+function showPopup(order) {
+
+    /* SOUND */
+
+    if(soundEnabled) {
+
+        notificationSound.currentTime = 0;
+
+        notificationSound.play()
+
+        .catch(err => {
+
+            console.log(err);
+        });
+    }
+
+    /* SHOW POPUP */
+
+    document.getElementById(
+        "popupOverlay"
+    ).style.display = "flex";
+
+    document.getElementById(
+        "popupContent"
+    ).innerHTML = `
+
+        <p>
+            <strong>
+                ${order.customer_name || "Customer"}
+            </strong>
+        </p>
+
+        <br>
+
+        <p>
+            ${order.order_type || "Order"}
+        </p>
+
+        <br>
+
+        <p>
+            Rs. ${order.total}
+        </p>
+
+    `;
+
+    /* ACCEPT */
+
+    document.getElementById(
+        "popupAccept"
+    ).onclick = () => {
+
+        updateStatus(
+            order.id,
+            "Preparing"
+        );
+
+        closePopup();
+    };
+
+    /* REJECT */
+
+    document.getElementById(
+        "popupReject"
+    ).onclick = () => {
+
+        updateStatus(
+            order.id,
+            "Rejected"
+        );
+
+        closePopup();
+    };
+}
+
+/* CLOSE POPUP */
+
+function closePopup() {
+
+    document.getElementById(
+        "popupOverlay"
+    ).style.display = "none";
 }
 
 /* DISPLAY ORDERS */
@@ -228,12 +359,9 @@ function displayOrders() {
 
             items = JSON.parse(order.items);
 
-        } catch(err) {
+        }
 
-            console.log(
-                "Invalid items JSON",
-                err
-            );
+        catch(err) {
 
             items = [];
         }
@@ -495,136 +623,6 @@ async function updateStatus(
     }
 }
 
-/* CHECK NEW ORDERS */
-
-function checkNewOrders(orders) {
-
-    if(orders.length === 0) return;
-
-    const newestOrder = orders[0];
-
-    /* FIRST LOAD */
-
-    if(lastOrderId === 0) {
-
-        lastOrderId = newestOrder.id;
-
-        return;
-    }
-
-    /* NEW ORDER DETECTED */
-
-    if(
-
-        newestOrder.id > lastOrderId &&
-
-        newestOrder.status === "Pending"
-
-    ) {
-
-        showPopup(newestOrder);
-
-        lastOrderId = newestOrder.id;
-    }
-}
-
-/* SHOW POPUP */
-
-function showPopup(order) {
-
-    const sound =
-    document.getElementById(
-        "orderSound"
-    );
-
-    sound.play()
-
-    .then(() => {
-
-        console.log(
-            "Sound Played"
-        );
-
-    })
-
-    .catch(err => {
-
-        console.log(
-            "Sound Blocked",
-            err
-        );
-    });
-
-    document.getElementById(
-        "popupOverlay"
-    ).style.display = "flex";
-
-    document.getElementById(
-        "popupContent"
-    ).innerHTML = `
-
-        <p>
-
-            <strong>
-
-                ${order.customer_name}
-
-            </strong>
-
-        </p>
-
-        <br>
-
-        <p>
-
-            ${order.order_type}
-
-        </p>
-
-        <br>
-
-        <p>
-
-            Rs. ${order.total}
-
-        </p>
-
-    `;
-
-    document.getElementById(
-        "popupAccept"
-    ).onclick = () => {
-
-        updateStatus(
-            order.id,
-            "Preparing"
-        );
-
-        closePopup();
-    };
-
-    document.getElementById(
-        "popupReject"
-    ).onclick = () => {
-
-        updateStatus(
-            order.id,
-            "Rejected"
-        );
-
-        closePopup();
-    };
-}
-
-/* CLOSE POPUP */
-
-function closePopup() {
-
-    document.getElementById(
-        "popupOverlay"
-    ).style.display = "none";
-}
-
 /* SIDEBAR FILTER */
 
 const sidebarItems =
@@ -692,66 +690,13 @@ sidebarItems.forEach(item => {
 loadOrders();
 
 /* AUTO REFRESH */
-let previousOrderCount = 0;
 
-async function checkNewOrders() {
+setInterval(() => {
 
-    try {
+    loadOrders();
 
-        const res = await fetch("/orders");
+}, 3000);
 
-        const orders = await res.json();
-
-        displayOrders(orders);
-
-        /* FIRST LOAD */
-
-        if(previousOrderCount === 0) {
-
-            previousOrderCount = orders.length;
-            return;
-        }
-
-        /* NEW ORDER DETECTED */
-
-        if(orders.length > previousOrderCount) {
-
-            const latestOrder = orders[0];
-
-            /* POPUP */
-
-            alert(
-                `🔔 New Order Received!\n\nOrder #${latestOrder.id}`
-            );
-
-            /* SOUND */
-
-            if(soundEnabled) {
-
-                notificationSound.currentTime = 0;
-
-                notificationSound.play()
-                .catch(err => console.log(err));
-            }
-
-            previousOrderCount = orders.length;
-        }
-
-    }
-
-    catch(err) {
-
-        console.log(err);
-    }
-}
-
-/* CHECK EVERY 3 SECONDS */
-
-setInterval(checkNewOrders, 3000);
-
-/* FIRST LOAD */
-
-checkNewOrders();
 </script>
 
 </body>

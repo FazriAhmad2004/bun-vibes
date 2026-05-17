@@ -692,13 +692,66 @@ sidebarItems.forEach(item => {
 loadOrders();
 
 /* AUTO REFRESH */
+let previousOrderCount = 0;
 
-setInterval(() => {
+async function checkNewOrders() {
 
-    loadOrders();
+    try {
 
-}, 3000);
+        const res = await fetch("/orders");
 
+        const orders = await res.json();
+
+        displayOrders(orders);
+
+        /* FIRST LOAD */
+
+        if(previousOrderCount === 0) {
+
+            previousOrderCount = orders.length;
+            return;
+        }
+
+        /* NEW ORDER DETECTED */
+
+        if(orders.length > previousOrderCount) {
+
+            const latestOrder = orders[0];
+
+            /* POPUP */
+
+            alert(
+                `🔔 New Order Received!\n\nOrder #${latestOrder.id}`
+            );
+
+            /* SOUND */
+
+            if(soundEnabled) {
+
+                notificationSound.currentTime = 0;
+
+                notificationSound.play()
+                .catch(err => console.log(err));
+            }
+
+            previousOrderCount = orders.length;
+        }
+
+    }
+
+    catch(err) {
+
+        console.log(err);
+    }
+}
+
+/* CHECK EVERY 3 SECONDS */
+
+setInterval(checkNewOrders, 3000);
+
+/* FIRST LOAD */
+
+checkNewOrders();
 </script>
 
 </body>

@@ -522,35 +522,35 @@ async function placeOrder(){
 
     const orderData = {
 
-        customerName: name,
+    customerName: name,
 
-        phone: phone,
+    phone: phone,
 
-        orderTtype: orderType,
+    orderType: orderType,
 
-        address: address,
+    address: address,
 
-        street: street,
+    street: street,
 
-        location: userLocation,
+    location: userLocation,
 
-        paymentMethod: paymentMethod,
+    paymentMethod: paymentMethod,
 
-        paymentStatus:
+    paymentStatus:
 
-        paymentMethod === "online"
+    paymentMethod === "online"
 
-        ? "Paid"
+    ? "Paid"
 
-        : "Cash on Delivery",
+    : "Cash on Delivery",
 
-        total:
-        document.getElementById(
-            "grandTotal"
-        ).innerText,
+    total:
+    document.getElementById(
+        "grandTotal"
+    ).innerText,
 
-        items: cart
-    };
+    items: cart
+};
 
     console.log(orderData);
 

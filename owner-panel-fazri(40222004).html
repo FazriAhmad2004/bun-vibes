@@ -10,7 +10,7 @@
 
 <!-- AUDIO -->
 <audio id="orderSound">
-    <source src="audio/dingsound.mp3" type="audio/mpeg">
+    <source src="notification.mp3" type="audio/mpeg">
 </audio>
 
 <!-- SIDEBAR -->
@@ -71,16 +71,31 @@ const notificationSound = document.getElementById("orderSound");
 let soundEnabled = false;
 
 function enableSound() {
+
+    notificationSound.volume = 1;
+
+    notificationSound.currentTime = 0;
+
     notificationSound.play()
+
     .then(() => {
+
         notificationSound.pause();
-        notificationSound.currentTime = 0;
+
         soundEnabled = true;
-        alert("Notification Sound Enabled ✅");
+
+        alert(
+            "Notification Sound Enabled ✅"
+        );
     })
+
     .catch(err => {
+
         console.log(err);
-        alert("Click Enable Sound Again");
+
+        alert(
+            "Sound failed. Check audio file."
+        );
     });
 }
 

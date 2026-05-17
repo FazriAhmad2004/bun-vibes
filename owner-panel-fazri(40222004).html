@@ -1,702 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>BUN VIBES ADMIN</title>
-
-<link rel="stylesheet" href="admin.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUN VIBES ADMIN</title>
+    <link rel="stylesheet" href="admin.css">
 </head>
-
 <body>
 
 <!-- AUDIO -->
-
 <audio id="orderSound">
-
-    <source
-        src="audio/dingsound.mp3"
-        type="audio/mpeg">
-
+    <source src="audio/dingsound.mp3" type="audio/mpeg">
 </audio>
 
 <!-- SIDEBAR -->
-
 <div class="sidebar">
-
     <h2>BUN VIBES</h2>
-
     <ul>
         <li class="active">Live Orders</li>
         <li>Preparing</li>
+        <li>Ready</li> <!-- Added Ready state tab to your workflow -->
         <li>Delivered</li>
         <li>Cancelled</li>
     </ul>
 
     <!-- ENABLE SOUND -->
-
-    <button
-        onclick="enableSound()"
-        class="logout-btn">
-
-        Enable Sound
-
-    </button>
+    <button onclick="enableSound()" class="logout-btn">Enable Sound</button>
 
     <!-- LOGOUT -->
-
-    <button
-        class="logout-btn"
-        onclick="logout()">
-
-        Logout
-
-    </button>
-
+    <button class="logout-btn" onclick="logout()">Logout</button>
 </div>
 
 <!-- MAIN CONTENT -->
-
 <div class="main-content">
-
     <div class="topbar">
-
         <h1>Restaurant Dashboard</h1>
-
     </div>
 
     <!-- POPUP -->
-
-    <div id="popupOverlay"
-         class="popup-overlay">
-
+    <div id="popupOverlay" class="popup-overlay">
         <div class="popup-box">
-
-            <h2>
-                🔔 New Order Received
-            </h2>
-
+            <h2>🔔 New Order Received</h2>
             <div id="popupContent"></div>
-
             <div class="popup-buttons">
-
-                <button
-                    class="accept"
-                    id="popupAccept">
-
-                    Accept
-
-                </button>
-
-                <button
-                    class="reject"
-                    id="popupReject">
-
-                    Decline
-
-                </button>
-
+                <button class="accept" id="popupAccept">Accept</button>
+                <button class="reject" id="popupReject">Decline</button>
             </div>
-
         </div>
-
     </div>
 
     <!-- ORDERS -->
-
-    <div id="ordersContainer"
-         class="orders-container">
-
-    </div>
-
+    <div id="ordersContainer" class="orders-container"></div>
 </div>
 
 <script>
-
 /* CHECK LOGIN */
-
 if(localStorage.getItem("loggedIn") !== "true") {
-
-    window.location.href =
-    "staff-login.html";
+    window.location.href = "staff-login.html";
 }
 
 /* LOGOUT */
-
 function logout() {
-
     localStorage.removeItem("loggedIn");
-
     localStorage.removeItem("staffRole");
-
-    window.location.href =
-    "staff-login.html";
+    window.location.href = "staff-login.html";
 }
 
 /* SOUND */
-
-const notificationSound =
-document.getElementById(
-    "orderSound"
-);
-
+const notificationSound = document.getElementById("orderSound");
 let soundEnabled = false;
 
 function enableSound() {
-
     notificationSound.play()
-
     .then(() => {
-
         notificationSound.pause();
-
         notificationSound.currentTime = 0;
-
         soundEnabled = true;
-
-        alert(
-            "Notification Sound Enabled ✅"
-        );
+        alert("Notification Sound Enabled ✅");
     })
-
     .catch(err => {
-
         console.log(err);
-
-        alert(
-            "Click Enable Sound Again"
-        );
+        alert("Click Enable Sound Again");
     });
 }
 
 /* VARIABLES */
-
 let allOrders = [];
-
 let currentFilter = "all";
-
 let lastOrderId = 0;
 
 /* LOAD ORDERS */
-
 async function loadOrders() {
-
     try {
-
-        const res = await fetch(
-
-            "https://focused-rebirth-production-6a18.up.railway.app/orders"
-
-        );
-
+        const res = await fetch("https://focused-rebirth-production-6a18.up.railway.app/orders");
         const orders = await res.json();
-
         allOrders = orders;
-
         checkNewOrders(orders);
-
         displayOrders();
-
     }
-
     catch(err) {
-
         console.log(err);
     }
 }
 
 /* CHECK NEW ORDERS */
-
 function checkNewOrders(orders) {
-
     if(orders.length === 0) return;
-
     const newestOrder = orders[0];
 
     /* FIRST LOAD */
-
     if(lastOrderId === 0) {
-
         lastOrderId = newestOrder.id;
-
         return;
     }
 
     /* NEW ORDER */
-
-    if(
-
-        newestOrder.id > lastOrderId &&
-
-        newestOrder.status === "Pending"
-
-    ) {
-
+    if(newestOrder.id > lastOrderId ) {
         showPopup(newestOrder);
-
         lastOrderId = newestOrder.id;
     }
 }
 
 /* SHOW POPUP */
-
 function showPopup(order) {
-
     /* SOUND */
-
     if(soundEnabled) {
-
         notificationSound.currentTime = 0;
-
-        notificationSound.play()
-
-        .catch(err => {
-
-            console.log(err);
-        });
+        notificationSound.play().catch(err => console.log(err));
     }
 
     /* SHOW POPUP */
-
-    document.getElementById(
-        "popupOverlay"
-    ).style.display = "flex";
-
-    document.getElementById(
-        "popupContent"
-    ).innerHTML = `
-
-        <p>
-            <strong>
-                ${order.customer_name || "Customer"}
-            </strong>
-        </p>
-
+    document.getElementById("popupOverlay").style.display = "flex";
+    document.getElementById("popupContent").innerHTML = `
+        <p><strong>${order.customer_name || "Customer"}</strong></p>
         <br>
-
-        <p>
-            ${order.order_type || "Order"}
-        </p>
-
+        <p>${order.order_type || "Order"}</p>
         <br>
-
-        <p>
-            Rs. ${order.total}
-        </p>
-
+        <p>Rs. ${order.total}</p>
     `;
 
     /* ACCEPT */
-
-    document.getElementById(
-        "popupAccept"
-    ).onclick = () => {
-
-        updateStatus(
-            order.id,
-            "Preparing"
-        );
-
+    document.getElementById("popupAccept").onclick = () => {
+        updateStatus(order.id, "Preparing");
         closePopup();
     };
 
     /* REJECT */
-
-    document.getElementById(
-        "popupReject"
-    ).onclick = () => {
-
-        updateStatus(
-            order.id,
-            "Rejected"
-        );
-
+    document.getElementById("popupReject").onclick = () => {
+        updateStatus(order.id, "Rejected");
         closePopup();
     };
 }
 
 /* CLOSE POPUP */
-
 function closePopup() {
-
-    document.getElementById(
-        "popupOverlay"
-    ).style.display = "none";
+    document.getElementById("popupOverlay").style.display = "none";
 }
 
 /* DISPLAY ORDERS */
-
 function displayOrders() {
-
-    const container =
-    document.getElementById(
-        "ordersContainer"
-    );
-
+    const container = document.getElementById("ordersContainer");
     container.innerHTML = "";
 
     let filteredOrders = allOrders;
 
     if(currentFilter !== "all") {
-
-        filteredOrders =
-        allOrders.filter(order =>
-
-            order.status === currentFilter
-        );
+        filteredOrders = allOrders.filter(order => order.status === currentFilter);
     }
 
     filteredOrders.forEach(order => {
-
         let itemsHTML = "";
-
         let items = [];
 
         try {
-
             items = JSON.parse(order.items);
-
         }
-
         catch(err) {
-
             items = [];
         }
 
         if(Array.isArray(items)) {
-
             items.forEach(item => {
-
-                itemsHTML += `
-
-                    <p>
-
-                        ${item.qty}
-                        x
-                        ${item.name}
-
-                    </p>
-
-                `;
+                itemsHTML += `<p>${item.qty} x ${item.name}</p>`;
             });
         }
 
         container.innerHTML += `
-
         <div class="order-card">
-
             <div class="order-header">
-
-                <h2>
-
-                    Order #${order.id}
-
-                </h2>
-
-                <span class="status ${order.status}">
-
-                    ${order.status}
-
-                </span>
-
+                <h2>Order #${order.id}</h2>
+                <span class="status ${order.status}">${order.status}</span>
             </div>
-
             <div class="customer-details">
-
-                <p>
-
-                    <strong>Name:</strong>
-
-                    ${order.customer_name || "N/A"}
-
-                </p>
-
-                <p>
-
-                    <strong>Phone:</strong>
-
-                    ${order.phone || "N/A"}
-
-                </p>
-
-                <p>
-
-                    <strong>Order Type:</strong>
-
-                    ${order.order_type || "N/A"}
-
-                </p>
-
-                <p>
-
-                    <strong>Address:</strong>
-
-                    ${order.address || "N/A"}
-
-                </p>
-
-                <p>
-
-                    <strong>Street:</strong>
-
-                    ${order.street || "N/A"}
-
-                </p>
-
-                <p>
-
-                    <strong>Payment:</strong>
-
-                    ${order.payment || "N/A"}
-
-                </p>
-
-                <p>
-
-                    <strong>Ordered Time:</strong>
-
-                    ${new Date(
-                        order.created_at
-                    ).toLocaleString()}
-
-                </p>
-
-                <p>
-
-                    <a
-                    href="${order.location}"
-                    target="_blank">
-
-                    📍 Open Location
-
-                    </a>
-
-                </p>
-
+                <p><strong>Name:</strong> ${order.customer_name || "N/A"}</p>
+                <p><strong>Phone:</strong> ${order.phone || "N/A"}</p>
+                <p><strong>Order Type:</strong> ${order.order_type || "N/A"}</p>
+                <p><strong>Address:</strong> ${order.address || "N/A"}</p>
+                <p><strong>Street:</strong> ${order.street || "N/A"}</p>
+                <p><strong>Payment:</strong> ${order.payment || "N/A"}</p>
+                <p><strong>Ordered Time:</strong> ${new Date(order.created_at).toLocaleString()}</p>
+                <p><a href="${order.location}" target="_blank">📍 Open Location</a></p>
             </div>
-
             <div class="items">
-
                 <h3>Items</h3>
-
                 ${itemsHTML}
-
             </div>
-
-            <div class="total">
-
-                Total : Rs. ${order.total}
-
-            </div>
-
+            <div class="total">Total : Rs. ${order.total}</div>
             <div class="buttons">
+                <!-- Collapsed onclick events to a single line to remove syntax line-break vulnerabilities -->
+                ${order.status === "Pending" ? `
+                    <button onclick="updateStatus(${order.id}, 'Preparing')" class="ready">Accept</button>
+                    <button onclick="updateStatus(${order.id}, 'Rejected')" class="reject">Reject</button>
+                ` : ""}
 
-                ${order.status === "Pending"
+                ${order.status === "Preparing" ? `
+                    <button onclick="updateStatus(${order.id}, 'Ready')" class="ready">Ready</button>
+                ` : ""}
 
-                ? `
-
-                <button
-
-                onclick="
-                updateStatus(
-                ${order.id},
-                'Preparing'
-                )"
-
-                class="ready">
-
-                Accept
-
-                </button>
-
-                <button
-
-                onclick="
-                updateStatus(
-                ${order.id},
-                'Rejected'
-                )"
-
-                class="reject">
-
-                Reject
-
-                </button>
-
-                `
-
-                : ""}
-
-                ${order.status === "Preparing"
-
-                ? `
-
-                <button
-
-                onclick="
-                updateStatus(
-                ${order.id},
-                'Ready'
-                )"
-
-                class="ready">
-
-                Ready
-
-                </button>
-
-                `
-
-                : ""}
-
-                ${order.status === "Ready"
-
-                ? `
-
-                <button
-
-                onclick="
-                updateStatus(
-                ${order.id},
-                'Delivered'
-                )"
-
-                class="delivered">
-
-                Delivered
-
-                </button>
-
-                `
-
-                : ""}
-
+                ${order.status === "Ready" ? `
+                    <button onclick="updateStatus(${order.id}, 'Delivered')" class="delivered">Delivered</button>
+                ` : ""}
             </div>
-
         </div>
-
         `;
     });
 }
 
 /* UPDATE STATUS */
-
-async function updateStatus(
-    id,
-    status
-) {
-
+async function updateStatus(id, status) {
     try {
-
-        await fetch(
-
-            `https://focused-rebirth-production-6a18.up.railway.app/orders/${id}`,
-
-            {
-
-                method: "PUT",
-
-                headers: {
-
-                    "Content-Type":
-                    "application/json"
-
-                },
-
-                body: JSON.stringify({
-
-                    status: status
-
-                })
-            }
-        );
-
+        await fetch(`https://focused-rebirth-production-6a18.up.railway.app/orders/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ status: status })
+        });
         loadOrders();
     }
-
     catch(err) {
-
         console.log(err);
     }
 }
 
 /* SIDEBAR FILTER */
-
-const sidebarItems =
-document.querySelectorAll(
-    ".sidebar ul li"
-);
+const sidebarItems = document.querySelectorAll(".sidebar ul li");
 
 sidebarItems.forEach(item => {
+    item.addEventListener("click", () => {
+        sidebarItems.forEach(li => li.classList.remove("active"));
+        item.classList.add("active");
 
-    item.addEventListener(
-        "click",
+        const text = item.innerText;
 
-        () => {
-
-            sidebarItems.forEach(li =>
-
-                li.classList.remove(
-                    "active"
-                )
-            );
-
-            item.classList.add(
-                "active"
-            );
-
-            const text =
-            item.innerText;
-
-            if(text === "Live Orders") {
-
-                currentFilter = "all";
-            }
-
-            else if(
-                text === "Preparing"
-            ) {
-
-                currentFilter =
-                "Preparing";
-            }
-
-            else if(
-                text === "Delivered"
-            ) {
-
-                currentFilter =
-                "Delivered";
-            }
-
-            else if(
-                text === "Cancelled"
-            ) {
-
-                currentFilter =
-                "Rejected";
-            }
-
-            displayOrders();
+        if(text === "Live Orders") {
+            currentFilter = "all";
         }
-    );
+        else if(text === "Preparing") {
+            currentFilter = "Preparing";
+        }
+        else if(text === "Ready") {
+            currentFilter = "Ready"; // Handled new filter item
+        }
+        else if(text === "Delivered") {
+            currentFilter = "Delivered";
+        }
+        else if(text === "Cancelled") {
+            currentFilter = "Rejected";
+        }
+
+        displayOrders();
+    });
 });
 
 /* INITIAL LOAD */
-
 loadOrders();
 
 /* AUTO REFRESH */
-
 setInterval(() => {
-
     loadOrders();
-
 }, 3000);
-
 </script>
 
 </body>

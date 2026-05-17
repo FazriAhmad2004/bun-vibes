@@ -29,11 +29,11 @@ app.post("/orders", (req, res) => {
 
     const {
 
-        customer_name,
+        customerName,
 
         phone,
 
-        order_type,
+        orderTtype,
 
         address,
 
@@ -41,7 +41,7 @@ app.post("/orders", (req, res) => {
 
         location,
 
-        payment,
+        paymentMethod,
 
         paymentStatus,
 

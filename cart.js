@@ -522,11 +522,11 @@ async function placeOrder(){
 
     const orderData = {
 
-        customer_name: name,
+        customerName: name,
 
         phone: phone,
 
-        order_type: orderType,
+        orderTtype: orderType,
 
         address: address,
 
@@ -534,7 +534,7 @@ async function placeOrder(){
 
         location: userLocation,
 
-        payment: paymentMethod,
+        paymentMethod: paymentMethod,
 
         paymentStatus:
 

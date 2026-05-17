@@ -228,25 +228,33 @@ function displayOrders() {
 
             items = JSON.parse(order.items);
 
-        } catch {
+        } catch(err) {
+
+            console.log(
+                "Invalid items JSON",
+                err
+            );
 
             items = [];
         }
 
-        items.forEach(item => {
+        if(Array.isArray(items)) {
 
-            itemsHTML += `
+            items.forEach(item => {
 
-                <p>
+                itemsHTML += `
 
-                    ${item.qty}
-                    x
-                    ${item.name}
+                    <p>
 
-                </p>
+                        ${item.qty}
+                        x
+                        ${item.name}
 
-            `;
-        });
+                    </p>
+
+                `;
+            });
+        }
 
         container.innerHTML += `
 
@@ -504,7 +512,7 @@ function checkNewOrders(orders) {
         return;
     }
 
-    /* NEW ORDER */
+    /* NEW ORDER DETECTED */
 
     if(
 
